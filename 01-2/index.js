@@ -2,35 +2,33 @@ fetch('input.txt')
   .then(response => response.text())
   .then(text => text.split(`\n`).map(el => parseInt(el)))
   .then(data => { 
-    return k_combinations(data, 3).reduce((obj, arr) => {
+    return k_combinations(data, 199).reduce((obj, arr) => {
       const sums2020 = arr.reduce((total, current) => total + current, 0) === 2020;
-      return sums2020 
-        ? obj['found'] = arr.reduce((total, current) => total * current) 
-        : obj;
+      if( sums2020 )
+        obj['found'] = arr.reduce((total, current) => total * current) 
+      return obj;
     },{});
   })
   .then(result => console.log(result.found))
   .catch(error => console.error(`${error} -- No such combination`));
 
-function k_combinations(set, k) {
-  let combs;
+function k_combinations(dataSet, combinationSize) {
+  let combinations = [];
   
-  // There is no way to take e.g. sets of 5 elements from
-  // a set of 4.
-  if (k > set.length || k <= 0)
+  // i.e. A set of 4 won't produce 5-sized subsets
+  if (combinationSize > dataSet.length || combinationSize <= 0)
     return [];
   
   // K-sized set has only one K-sized subset.
-  if (k === set.length) 
-    return [set];
+  if (combinationSize === dataSet.length) 
+    return [dataSet];
   
   // There is N 1-sized subsets in a N-sized set.
-  if (k === 1) {
-    combs = [];
-    for (let i = 0; i < set.length; i++) {
-      combs.push([set[i]]);
+  if (combinationSize === 1) {
+    for (element of dataSet) {
+      combinations.push([element]);
     }
-    return combs;
+    return combinations;
   }
   
   // Assert {1 < k < set.length}
@@ -52,17 +50,16 @@ function k_combinations(set, k) {
   // element so they are already computed and stored. When the length
   // of the subsequent list drops below (k-1), we cannot find any
   // (k-1)-combs, hence the upper limit for the iteration:
-  combs = [];
-  for (let i = 0; i < set.length - k + 1; i++) {
+  for (let i = 0; i <= dataSet.length - combinationSize; i++) {
     // head is a list that includes only our current element.
-    let head = set.slice(i, i + 1);
+    let head = dataSet.slice(i, i + 1);
     // We take smaller combinations from the subsequent elements
-    let tailcombs = k_combinations(set.slice(i + 1), k - 1);
+    let tailcombs = k_combinations(dataSet.slice(i + 1), combinationSize - 1);
     // For each (k-1)-combination we join it with the current
     // and store it to the set of k-combinations.
     for (let j = 0; j < tailcombs.length; j++) {
-      combs.push(head.concat(tailcombs[j]));
+      combinations.push(head.concat(tailcombs[j]));
     }
   }
-  return combs;
+  return combinations;
 }
