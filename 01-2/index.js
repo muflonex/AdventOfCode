@@ -2,7 +2,7 @@ fetch('input.txt')
   .then(response => response.text())
   .then(text => text.split(`\n`).map(el => parseInt(el)))
   .then(data => { 
-    return k_combinations(data, 199).reduce((obj, arr) => {
+    return k_combinations(data, 3).reduce((obj, arr) => {
       const sums2020 = arr.reduce((total, current) => total + current, 0) === 2020;
       if( sums2020 )
         obj['found'] = arr.reduce((total, current) => total * current) 
